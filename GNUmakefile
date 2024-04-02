@@ -1,4 +1,4 @@
-PROJECT=sh-s2b
+PROJECT=s2b
 VERSION=1.0.0
 PREFIX=/usr/local
 all:
@@ -8,7 +8,8 @@ install:
 ## -- BLOCK:license --
 install: install-license
 install-license: 
-	install -D -t $(DESTDIR)$(PREFIX)/share/doc/$(PROJECT) LICENSE
+	mkdir -p $(DESTDIR)$(PREFIX)/share/doc/$(PROJECT)
+	cp LICENSE $(DESTDIR)$(PREFIX)/share/doc/$(PROJECT)
 ## -- BLOCK:license --
 ## -- BLOCK:sh --
 install: install-sh
