@@ -1,0 +1,64 @@
+#!/bin/sh -e
+##:
+#h: Usage: dialog-w [DIALOG-CMDS...]
+#h:
+#h: Wrapper around dialog(1) for windows. This script downloads dialog
+#h: if needed and executes it. When sourced it provides:
+#h:
+#h:   dialog_clear   : Clear screen.
+#h:   dialog_SEL ... : Execute dialog, save result in SEL.
+#h:   dialog ...     : Execute dialog.
+##:
+dialog_w() {
+    dialog_w_download_DIALOG
+    "${DIALOG}" "$@"
+}
+## -------------------------------------------------------------------
+dialog_clear() {
+    cmd /C cls
+}
+dialog_SEL() {
+    local ret tmp="${TEMP:-/tmp}/dialog-$$.tmp"
+    if dialog "$@" 2> "${tmp}"; then
+        SEL="$(cat "${tmp}")" ret=0
+    else
+        ret=1
+    fi
+    return "${ret}"
+}
+dialog() {
+    "${DIALOG}" "$@"
+}
+
+## -------------------------------------------------------------------
+dialog_w_download_DIALOG() {
+    local u="https://andrear.altervista.org/contents/pc/dialog/dialog-exe-mingw.zip"
+    local d="${LOCALAPPDATA}/Microsoft/WindowsApps"
+    local z="${TEMP:-/tmp}/dialog-exe-mingw.zip"
+    local x="${d}/dialog.exe"
+    if test ! -f "${x}"; then
+        if test ! -d "${d}"; then
+            echo >&2 "error: ${d}: The directory does not exist."
+            return 1
+        fi
+        if test ! -f "${z}"; then
+            wget -q -O "${z}.tmp" "${u}"
+            mv "${z}.tmp" "${z}"
+        fi
+        unzip "${z}" -d "${d}"
+    fi
+    DIALOG="${x}"
+}
+## -------------------------------------------------------------------
+if test @"${SCRNAME:-$(basename "$0")}" = @"dialog-w"; then
+    if test ! @"$(uname -s)" = @"Windows_NT"; then
+        echo >&2 "error: Unsupported platform."
+        return 1
+    fi
+    case "${1}" in
+        ''|-h|--help) sed -n 's/^ *#h: \{0,1\}//p' "$0";;
+        *)            dialog_w "$@"; exit 0;;
+    esac
+else
+    dialog_w_download_DIALOG
+fi

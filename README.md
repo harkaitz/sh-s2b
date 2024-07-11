@@ -4,6 +4,17 @@ Pack shell scripts written for Busybox for Windows in batch files.
 
 ## Help
 
+dialog-w
+
+    Usage: dialog-w [DIALOG-CMDS...]
+    
+    Wrapper around dialog(1) for windows. This script downloads dialog
+    if needed and executes it. When sourced it provides:
+    
+      dialog_clear   : Clear screen.
+      dialog_SEL ... : Execute dialog, save result in SEL.
+      dialog ...     : Execute dialog.
+
 s2b
 
     Usage: s2b OPTS... SCRIPT ARGS...
